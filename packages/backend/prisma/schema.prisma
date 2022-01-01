@@ -7,7 +7,10 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+
+  // For some reason Prisma is not able to load this variable
+  // url      = env("DATABASE_URL")
+  url = "postgresql://postgres:postgres@localhost:5432/ticket-app?schema=public"
 }
 
 model User {
