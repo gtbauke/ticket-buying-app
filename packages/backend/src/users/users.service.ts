@@ -72,7 +72,14 @@ export class UsersService {
     return Either.right(updatedUser);
   }
 
-  public remove(id: number) {
-    return `This action removes a #${id} user`;
+  public async remove(id: string): Promise<Either<boolean, UserError>> {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+
+    if (!user) {
+      return Either.left(new UserNotFoundError());
+    }
+
+    await this.prisma.user.delete({ where: { id } });
+    return Either.right(true);
   }
 }

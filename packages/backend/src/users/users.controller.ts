@@ -8,6 +8,10 @@ import {
   Delete,
   HttpException,
   UseGuards,
+  HttpCode,
+  HttpStatus,
+  Req,
+  UnauthorizedException,
 } from '@nestjs/common';
 
 import { Either } from '../utils/Either';
@@ -18,6 +22,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { User } from '.prisma/client';
 
 import { UpdateUserDto } from './dto/update-user.dto';
+import { IRequestWithUser } from '../utils/IRequestWithUser';
 
 @Controller('users')
 export class UsersController {
@@ -55,9 +60,14 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   public async update(
+    @Req() request: IRequestWithUser,
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
+    if (request.user.userId !== id) {
+      throw new UnauthorizedException();
+    }
+
     const updatedUser = await this.usersService.update(id, updateUserDto);
 
     if (Either.isLeft(updatedUser)) {
@@ -67,8 +77,24 @@ export class UsersController {
     return { user: updatedUser.value };
   }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.usersService.remove(+id);
-  // }
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  public async remove(
+    @Req() request: IRequestWithUser,
+    @Param('id') id: string,
+  ) {
+    if (request.user.userId !== id) {
+      throw new UnauthorizedException();
+    }
+
+    const statusOperation = await this.usersService.remove(id);
+
+    if (Either.isLeft(statusOperation)) {
+      throw new HttpException(
+        statusOperation.value,
+        statusOperation.value.statusCode,
+      );
+    }
+  }
 }
