@@ -43,7 +43,8 @@
   "scripts": {
     "test": "jest",
     "lint": "eslint \"src/**/*.+{ts|js|tsx|jsx}\"",
-    "format": "prettier \"src/**/*.+{ts|js|tsx|jsx}\" --write"
+    "format": "prettier \"src/**/*.+{ts|js|tsx|jsx}\" --write",
+    "backend:dev": "cross-env NODE_ENV=development ts-node ./scripts/run-package-command.ts backend start:dev"
   },
   "husky": {
     "hooks": {
