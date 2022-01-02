@@ -5,8 +5,7 @@ import { ApiError } from '../../utils/ApiError';
 // eslint-disable-next-line no-shadow
 export enum UserErrorKind {
   UserNotFound = 'UserNotFound',
-  MissingEmail = 'MissingEmail',
-  MissingPassword = 'MissingPassword',
+  EmailAlreadyInUser = 'EmailAlreadyInUse',
 }
 
 export abstract class UserError extends ApiError {

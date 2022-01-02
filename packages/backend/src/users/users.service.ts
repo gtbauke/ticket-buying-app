@@ -6,9 +6,9 @@ import { User, Prisma } from '.prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaService } from '../Prisma.service';
 import { Either } from '../utils/Either';
-import { UserError, UserErrorKind } from './errors/UserError';
+import { UserError } from './errors/UserError';
 import { UserNotFoundError } from './errors/UserNotFound.error';
-import { InvalidUserInputError } from './errors/InvalidUserInput.error';
+import { EmailAlreadyInUseError } from './errors/EmailAlreadyInUseError.error';
 
 @Injectable()
 export class UsersService {
@@ -19,23 +19,13 @@ export class UsersService {
     password,
     firstName,
     lastName,
-  }: CreateUserDto): Promise<Either<{ user: User }, InvalidUserInputError>> {
-    if (!email) {
-      return Either.left(
-        new InvalidUserInputError(
-          UserErrorKind.MissingEmail,
-          'Email is required',
-        ),
-      );
-    }
+  }: CreateUserDto): Promise<Either<{ user: User }, UserError>> {
+    const isAlreadyPresent = !!(await this.prisma.user.findUnique({
+      where: { email },
+    }));
 
-    if (!password) {
-      return Either.left(
-        new InvalidUserInputError(
-          UserErrorKind.MissingPassword,
-          'Password is required',
-        ),
-      );
+    if (isAlreadyPresent) {
+      return Either.left(new EmailAlreadyInUseError(email));
     }
 
     const hashedPassword = await argon.hash(password);
