@@ -9,6 +9,7 @@ import { Either } from '../utils/Either';
 import { UserError } from './errors/UserError';
 import { UserNotFoundError } from './errors/UserNotFound.error';
 import { EmailAlreadyInUseError } from './errors/EmailAlreadyInUseError.error';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -19,7 +20,7 @@ export class UsersService {
     password,
     firstName,
     lastName,
-  }: CreateUserDto): Promise<Either<{ user: User }, UserError>> {
+  }: CreateUserDto): Promise<Either<User, UserError>> {
     const isAlreadyPresent = !!(await this.prisma.user.findUnique({
       where: { email },
     }));
@@ -33,11 +34,12 @@ export class UsersService {
       data: { email, password: hashedPassword, firstName, lastName },
     });
 
-    return Either.right({ user });
+    return Either.right(user);
   }
 
-  public findAll() {
-    return `This action returns all users`;
+  public async findAll(): Promise<User[]> {
+    const users = await this.prisma.user.findMany();
+    return users;
   }
 
   public async findOne(
@@ -51,9 +53,24 @@ export class UsersService {
     return Either.right(user);
   }
 
-  // public update(id: number, updateUserDto: UpdateUserDto) {
-  //   return `This action updates a #${id} user`;
-  // }
+  public async update(
+    id: string,
+    { email, password, firstName, lastName }: UpdateUserDto,
+  ): Promise<Either<User, UserError>> {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+
+    if (!user) {
+      return Either.left(new UserNotFoundError());
+    }
+
+    const hash = password ? await argon.hash(password) : undefined;
+    const updatedUser = await this.prisma.user.update({
+      data: { email, password: hash, firstName, lastName },
+      where: { id },
+    });
+
+    return Either.right(updatedUser);
+  }
 
   public remove(id: number) {
     return `This action removes a #${id} user`;
