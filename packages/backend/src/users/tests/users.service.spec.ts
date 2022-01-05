@@ -130,6 +130,17 @@ describe('UsersService', () => {
       expect(result).toEqual(Either.right(userToUpdate));
     });
 
+    it('should return the updated user info and rehash the password', async () => {
+      const result = await service.update(userToUpdate.id, {
+        email: userToUpdate.email,
+        firstName: userToUpdate.firstName,
+        lastName: userToUpdate.lastName,
+        password: `${userToUpdate.password}!`,
+      });
+
+      expect(result).toEqual(Either.right(userToUpdate));
+    });
+
     it('should return an UserNotFoundError when the user does not exist', async () => {
       const result = await service.update('hello-world', {
         email: userToUpdate.email,
