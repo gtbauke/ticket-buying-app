@@ -5,8 +5,8 @@ import { INestApplication, HttpStatus, ValidationPipe } from '@nestjs/common';
 import * as faker from 'faker';
 
 import { AppModule } from '../src/app.module';
-import { TransformInterceptor } from '../src/transform.interceptor';
-import { PrismaService } from '../src/Prisma.service';
+import { TransformInterceptor } from '../src/global/transform.interceptor';
+import { PrismaService } from '../src/global/prisma.service';
 
 describe('Users', () => {
   jest.setTimeout(10000);

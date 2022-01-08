@@ -21,8 +21,8 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { IRequestWithUser } from '../utils/IRequestWithUser';
 import { UsersInterceptor } from './users.interceptor';
+import { UserAccessGuard } from './user-access.guard';
 
 @Controller('users')
 @UseInterceptors(UsersInterceptor)
@@ -58,16 +58,15 @@ export class UsersController {
     return user.value;
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, UserAccessGuard)
   @Patch(':id')
   public async update(
-    @Req() request: IRequestWithUser,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    if (request.user.userId !== id) {
-      throw new UnauthorizedException();
-    }
+    // if (request.user.userId !== id) {
+    //   throw new UnauthorizedException();
+    // }
 
     const updatedUser = await this.usersService.update(id, updateUserDto);
 
@@ -78,16 +77,13 @@ export class UsersController {
     return updatedUser.value;
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, UserAccessGuard)
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  public async remove(
-    @Req() request: IRequestWithUser,
-    @Param('id', ParseUUIDPipe) id: string,
-  ) {
-    if (request.user.userId !== id) {
-      throw new UnauthorizedException();
-    }
+  public async remove(@Param('id', ParseUUIDPipe) id: string) {
+    // if (request.user.userId !== id) {
+    //   throw new UnauthorizedException();
+    // }
 
     const statusOperation = await this.usersService.remove(id);
 
