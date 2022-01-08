@@ -3,10 +3,10 @@ import * as faker from 'faker';
 import { v4 as uuid } from 'uuid';
 
 import { UsersService } from '../users.service';
-import { PrismaService } from '../../Prisma.service';
 import { Either } from '../../utils/Either';
 import { EmailAlreadyInUseError } from '../errors/EmailAlreadyInUseError.error';
 import { UserNotFoundError } from '../errors/UserNotFound.error';
+import { PrismaService } from '../../global/prisma.service';
 
 const userToCreate = {
   id: uuid(),

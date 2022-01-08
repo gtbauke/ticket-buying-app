@@ -4,12 +4,12 @@ import * as argon from 'argon2';
 import { User, Prisma } from '.prisma/client';
 
 import { CreateUserDto } from './dto/create-user.dto';
-import { PrismaService } from '../Prisma.service';
 import { Either } from '../utils/Either';
 import { UserError } from './errors/UserError';
 import { UserNotFoundError } from './errors/UserNotFound.error';
 import { EmailAlreadyInUseError } from './errors/EmailAlreadyInUseError.error';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { PrismaService } from '../global/prisma.service';
 
 @Injectable()
 export class UsersService {

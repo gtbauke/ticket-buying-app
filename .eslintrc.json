@@ -1,4 +1,5 @@
 {
+  "root": true,
   "env": {
       "browser": true,
       "es2020": true,
@@ -25,7 +26,8 @@
       "jest",
       "eslint-plugin-import-helpers",
       "eslint-plugin-node",
-      "prettier"
+      "prettier",
+      "import"
   ],
   "settings": {
     "import/extensions": [".js", ".jsx", ".ts", ".tsx"],

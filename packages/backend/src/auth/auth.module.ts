@@ -8,7 +8,7 @@ import { LocalStrategy } from './local.strategy';
 import { jwtConstants } from './constants';
 import { JwtStrategy } from './jwt.strategy';
 import { UsersService } from '../users/users.service';
-import { PrismaService } from '../Prisma.service';
+import { PrismaService } from '../global/prisma.service';
 
 @Module({
   imports: [

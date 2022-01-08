@@ -7,7 +7,7 @@ import {
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { IResponse } from './utils/IResponse';
+import { IResponse } from '../utils/IResponse';
 
 @Injectable()
 export class TransformInterceptor<T>
