@@ -6,13 +6,13 @@ import * as faker from 'faker';
 
 import { AppModule } from '../src/app.module';
 import { TransformInterceptor } from '../src/transform.interceptor';
+import { PrismaService } from '../src/Prisma.service';
 
-/*
-TODO: discover a way to test in a Test DB
-TODO: rollback all the db after each test
-*/
 describe('Users', () => {
+  jest.setTimeout(10000);
+
   let app: INestApplication;
+  let prisma: PrismaService;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -23,6 +23,7 @@ describe('Users', () => {
     app.useGlobalPipes(new ValidationPipe());
     app.useGlobalInterceptors(new TransformInterceptor());
 
+    prisma = moduleRef.get(PrismaService);
     await app.init();
   });
 
@@ -232,7 +233,6 @@ describe('Users', () => {
 
     describe('when all data is valid', () => {
       it('should return the created user', async () => {
-        jest.setTimeout(10000);
         const userData = {
           email: faker.internet.email(),
           firstName: faker.name.firstName(),
@@ -262,6 +262,7 @@ describe('Users', () => {
   });
 
   afterAll(async () => {
+    await prisma.truncateAll();
     await app.close();
   });
 });

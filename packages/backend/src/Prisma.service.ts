@@ -13,4 +13,22 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
       await app.close();
     });
   }
+
+  public async truncateAll() {
+    const tablenames = await this.$queryRaw<
+      Array<{ tablename: string }>
+    >`SELECT tablename FROM pg_tables WHERE schemaname='public'`;
+
+    tablenames.forEach(async ({ tablename }) => {
+      if (tablename !== '_prisma_migrations') {
+        try {
+          await this.$executeRawUnsafe(
+            `TRUNCATE TABLE "public"."${tablename}" CASCADE;`,
+          );
+        } catch (error) {
+          console.log({ error });
+        }
+      }
+    });
+  }
 }
