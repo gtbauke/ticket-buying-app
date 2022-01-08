@@ -12,19 +12,20 @@ import {
   HttpStatus,
   Req,
   UnauthorizedException,
+  ParseUUIDPipe,
+  UseInterceptors,
 } from '@nestjs/common';
 
 import { Either } from '../utils/Either';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-
-import { User } from '.prisma/client';
-
 import { UpdateUserDto } from './dto/update-user.dto';
 import { IRequestWithUser } from '../utils/IRequestWithUser';
+import { UsersInterceptor } from './users.interceptor';
 
 @Controller('users')
+@UseInterceptors(UsersInterceptor)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -35,33 +36,33 @@ export class UsersController {
     if (Either.isLeft(user))
       throw new HttpException(user.value, user.value.statusCode);
 
-    return { user: user.value };
+    return user.value;
   }
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  public async findAll(): Promise<{ users: User[] }> {
+  public async findAll() {
     const users = await this.usersService.findAll();
-    return { users };
+    return users;
   }
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  public async findOne(@Param('id') id: string) {
+  public async findOne(@Param('id', ParseUUIDPipe) id: string) {
     const user = await this.usersService.findOne({ id });
 
     if (Either.isLeft(user)) {
       throw new HttpException(user.value, user.value.statusCode);
     }
 
-    return { user: user.value };
+    return user.value;
   }
 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   public async update(
     @Req() request: IRequestWithUser,
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
     if (request.user.userId !== id) {
@@ -74,7 +75,7 @@ export class UsersController {
       throw new HttpException(updatedUser.value, updatedUser.value.statusCode);
     }
 
-    return { user: updatedUser.value };
+    return updatedUser.value;
   }
 
   @UseGuards(JwtAuthGuard)
@@ -82,7 +83,7 @@ export class UsersController {
   @HttpCode(HttpStatus.NO_CONTENT)
   public async remove(
     @Req() request: IRequestWithUser,
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
   ) {
     if (request.user.userId !== id) {
       throw new UnauthorizedException();

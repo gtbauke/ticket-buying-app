@@ -16,12 +16,10 @@ export class UpdateUserDto {
 
   @IsOptional()
   @MinLength(8, {
-    message:
-      'Password must be at least $contraint1 characters long, but instead got $value',
+    message: 'Password must be at least $constraint1 characters long',
   })
   @MaxLength(255, {
-    message:
-      'Password must be no longer than $contraint1 characters long, but instead got $value',
+    message: 'Password must be at most $constraint1 characters long',
   })
   @Matches(/[a-z]/, {
     message: 'Password must contain at least one lowercase character',

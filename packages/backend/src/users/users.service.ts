@@ -15,12 +15,10 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersService {
   public constructor(private readonly prisma: PrismaService) {}
 
-  public async create({
-    email,
-    password,
-    firstName,
-    lastName,
-  }: CreateUserDto): Promise<Either<User, UserError>> {
+  public async create(
+    createUserDto: CreateUserDto,
+  ): Promise<Either<User, UserError>> {
+    const { firstName, lastName, email, password } = createUserDto;
     const isAlreadyPresent = !!(await this.prisma.user.findUnique({
       where: { email },
     }));

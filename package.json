@@ -44,9 +44,11 @@
     "test": "jest",
     "lint": "eslint \"src/**/*.+{ts|js|tsx|jsx}\"",
     "format": "prettier \"src/**/*.+{ts|js|tsx|jsx}\" --write",
+    "package": "ts-node ./scripts/run-package-command.ts",
     "backend:dev": "cross-env NODE_ENV=development ts-node ./scripts/run-package-command.ts backend start:dev",
     "backend:test": "ts-node ./scripts/run-package-command.ts backend test",
-    "backend:test:cov": "ts-node ./scripts/run-package-command.ts backend test:cov"
+    "backend:test:cov": "ts-node ./scripts/run-package-command.ts backend test:cov",
+    "backend:test:e2e": "ts-node ./scripts/run-package-command.ts backend test:e2e"
   },
   "husky": {
     "hooks": {
